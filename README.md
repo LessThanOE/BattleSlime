@@ -1,5 +1,4 @@
 # BattleSlime
-a pygame project  
 暑假無聊來做遊戲
 
 #### 7/6 :
@@ -9,3 +8,4 @@ a pygame project
 - 隨機生成敵人 (依據分數)
 - 不同角色數值調整
 - 敵人和我方可以攻擊與死亡
+
