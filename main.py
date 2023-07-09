@@ -6,7 +6,6 @@ from button import Button
 from random import randint, choice
 
 
-
 class Game:
 	def __init__(self):
 
@@ -25,9 +24,12 @@ class Game:
 		for i in range(0,5):
 			self.button.add(Button(self.button_data[i], button_x_pos[i]))
 
+		self.score = 0
+		self.level = 0
+
 		# Timer
 		self.enemy_timer = pygame.USEREVENT + 1
-		pygame.time.set_timer(self.enemy_timer, 1200)
+		pygame.time.set_timer(self.enemy_timer, 1000)
 
 	def run(self):
 		while True:
@@ -48,8 +50,9 @@ class Game:
 						button.rect.centery = 610
 
 				if event.type == self.enemy_timer:
-					enemy_name = choice(['Slime', 'Block', 'Maru', 'Takai', 'Tobu', 'Metal', 'Bomb', 'Twin', 'Unicorn'])
+					enemy_name = enemy_list[randint(0, self.level)]
 					self.enemy.add(Enemy(enemy_name, 0, 500))
+					pygame.time.set_timer(self.enemy_timer, randint(1000, (10-self.level)*1000))
 
 
 			self.screen.fill('white')
@@ -58,16 +61,22 @@ class Game:
 			self.button.draw(self.screen)
 
 			self.enemy.draw(self.screen)
-			self.enemy.update()
+			self.enemy.update(self.chara)
 
 			self.chara.draw(self.screen)
-			self.chara.update()
+			self.chara.update(self.enemy)
 
 
-			self.current_time = int(pygame.time.get_ticks() / 1000)
-			score_surf = self.font.render(f'Score: {self.current_time}',False,(64,64,64))
-			score_rect = score_surf.get_rect(center = (400,50))
+			# score system
+			self.score = int(pygame.time.get_ticks() / 1000)
+			score_surf = self.font.render(f'Score: {self.score}', False, 'black')
+			score_rect = score_surf.get_rect(center = (1000,50))
 			self.screen.blit(score_surf,score_rect)
+
+			# level system
+			self.level = int(self.score / 10)
+			if self.level >= 8:
+				self.level = 8
 
 			pygame.display.update()
 			self.clock.tick(FPS)
