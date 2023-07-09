@@ -1,5 +1,5 @@
 # BattleSlime
-### pygame project
+a pygame project
 暑假無聊來做遊戲
 
 #### 7/6 :
