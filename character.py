@@ -30,12 +30,13 @@ class Character(pygame.sprite.Sprite):
         self.speed = chara_data[name]['speed']
         self.AOE = chara_data[name]['AOE']
 
-        self.target = None
+        self.target = []
 
         self.status = 'moving'
 
 
     def move(self):
+        print(self.name + ':move')
         # player chara move left, enemy chara move right
         if self.type == 'player':
             self.rect.x -= self.speed
@@ -44,37 +45,56 @@ class Character(pygame.sprite.Sprite):
 
 
     def collide(self, chara_list):
+        print(self.name + ':collide')
         if self.AOE:
-            pass
+            if self.name == 'Bomb':
+                # explode once collide with enemy
+                for chara in chara_list:
+                    chara_x = chara.rect.centerx
+                    chara_y = chara.rect.centery
+                    distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
+
+                    if distance <= self.atk_range:
+                        chara.health -= self.atk
+
+                self.kill()
 
         else:
-            # find the closest character (if in atk_range) and attack
-            min_distance = 100000
-            for chara in chara_list:
-                chara_x = chara.rect.centerx
-                chara_y = chara.rect.centery
-                distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
+            if not self.target:
+                # if not AOE and no target
+                # find the closest character (if in atk_range) and attack
+                min_distance = 100000
+                for chara in chara_list:
+                    chara_x = chara.rect.centerx
+                    chara_y = chara.rect.centery
+                    distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
 
-                if distance < min_distance and distance <= self.atk_range:
-                    min_distance = distance
-                    self.target = chara
+                    if distance < min_distance and distance <= self.atk_range:
+                        min_distance = distance
+                        if self.target: self.target.clear()
+                        self.target.append(chara)
 
-            if self.target:
-                self.status = 'attacking'
-            else:
-                self.status = 'moving'
+                if self.target:
+                    self.status = 'attacking'
+                else:
+                    self.status = 'moving'
 
 
     def attack(self):
-        self.target.health -= self.atk
-        if self.target.health <= 0:
-            self.target = None
+        print(self.name + ':attack')
+        for chara in self.target:
+            chara.health -= self.atk
+
+            #if chara.type == 'player': chara.rect.x += 1
+            #else: chara.rect.x -= 1
+
+            if chara.health <= 0:
+                self.target.remove(chara)
 
 
     def update(self, chara_list):
 
-        if self.target is  None:
-            self.collide(chara_list)
+        self.collide(chara_list)
 
         if self.status == 'moving':
             self.move()
