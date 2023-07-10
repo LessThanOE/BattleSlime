@@ -1,7 +1,6 @@
 import pygame, sys
 from setting import *
 from character import Character
-from enemy import Enemy
 from button import Button
 from random import randint, choice
 
@@ -16,18 +15,20 @@ class Game:
 		self.clock = pygame.time.Clock()
 		self.font = pygame.font.Font('Python/BattleSlime/Font/monogram-extended.ttf', 48)
 
-		self.chara = pygame.sprite.Group()
-		self.enemy = pygame.sprite.Group()
-
-		self.button = pygame.sprite.Group()
-		self.button_data = ['Slime', 'Block', 'Maru', 'Unicorn', 'Takai']
-		for i in range(0,5):
-			self.button.add(Button(self.button_data[i], button_x_pos[i]))
-
 		self.score = 0
 		self.level = 0
 
-		# Timer
+		# set character groups
+		self.chara = pygame.sprite.Group()
+		self.enemy = pygame.sprite.Group()
+
+		# set button
+		self.button = pygame.sprite.Group()
+		self.button_data = ['Slime', 'Block', 'Maru', 'Tobu', 'Bomb']
+		for i in range(0,5):
+			self.button.add(Button(self.button_data[i], button_x_pos[i]))
+
+		# timer
 		self.enemy_timer = pygame.USEREVENT + 1
 		pygame.time.set_timer(self.enemy_timer, 1000)
 
@@ -39,32 +40,32 @@ class Game:
 					sys.exit()
 
 				if event.type == pygame.MOUSEBUTTONDOWN:
-					# check if button has been pressed
+					# generate player character
 					for button in self.button.sprites():
 						if button.rect.collidepoint(pygame.mouse.get_pos()):
 							button.rect.centery = 612
-							self.chara.add(Character(button.name, 1200, 500))
-
+							self.chara.add(Character(button.name, 'player'))
 				if event.type == pygame.MOUSEBUTTONUP:
 					for button in self.button.sprites():
 						button.rect.centery = 610
 
 				if event.type == self.enemy_timer:
+					# generate enemy character
 					enemy_name = enemy_list[randint(0, self.level)]
-					self.enemy.add(Enemy(enemy_name, 0, 500))
+					self.enemy.add(Character(enemy_name, 'enemy'))
 					pygame.time.set_timer(self.enemy_timer, randint(1000, (10-self.level)*1000))
 
-
+			# draw background
 			self.screen.fill('white')
 			pygame.draw.line(self.screen, 'black', (0, 500), (WIDTH, 500), 3)
 
 			self.button.draw(self.screen)
 
 			self.enemy.draw(self.screen)
-			self.enemy.update(self.chara)
+			self.enemy.update(self.chara.sprites())
 
 			self.chara.draw(self.screen)
-			self.chara.update(self.enemy)
+			self.chara.update(self.enemy.sprites())
 
 
 			# score system
