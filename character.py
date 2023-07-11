@@ -2,6 +2,7 @@ import pygame
 from setting import *
 from math import sqrt
 
+
 class Character(pygame.sprite.Sprite):
     def __init__(self, name, type):
         super().__init__()
@@ -9,27 +10,33 @@ class Character(pygame.sprite.Sprite):
         self.name = name
         self.type = type
 
-        if type == 'player':
-            init_x = 1200
-            self.image = pygame.image.load(chara_img[name]['image_player']).convert_alpha()
+        if type == "player":
+            init_x = 1150
+            self.image = pygame.image.load(
+                chara_img[name]["image_player"]
+            ).convert_alpha()
         else:
-            init_x = 0
-            self.image = pygame.image.load(chara_img[name]['image_enemy']).convert_alpha()
+            init_x = 50
+            self.image = pygame.image.load(
+                chara_img[name]["image_enemy"]
+            ).convert_alpha()
 
-        if chara_data[name]['flyable']:
+        if chara_data[name]["flyable"]:
             init_y = 400
         else:
             init_y = horizon_y
 
         self.image = pygame.transform.rotozoom(self.image, 0, 0.3)
-        self.rect = self.image.get_rect(midbottom = (init_x, init_y))
+        self.rect = self.image.get_rect(midbottom=(init_x, init_y))
 
-        self.health = chara_data[name]['health']
-        self.speed = chara_data[name]['speed']
+        self.health = chara_data[name]["health"]
+        self.speed = chara_data[name]["speed"]
+        self.add_money = 10
+        self.cost = 10
 
-        self.atk = chara_data[name]['atk']
-        self.atk_range = chara_data[name]['atk_range']
-        self.AOE = chara_data[name]['AOE']
+        self.atk = chara_data[name]["atk"]
+        self.atk_range = chara_data[name]["atk_range"]
+        self.AOE = chara_data[name]["AOE"]
         self.knock_distance = 30
         self.last_atk_time = 0
         self.cooldown = 700
@@ -37,7 +44,7 @@ class Character(pygame.sprite.Sprite):
 
         self.target = []
 
-        self.status = 'moving'
+        self.status = "moving"
 
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -48,25 +55,34 @@ class Character(pygame.sprite.Sprite):
 
     def move(self):
         # player chara move left, enemy chara move right
-        if self.type == 'player':
+        if self.type == "player":
             self.rect.x -= self.speed
+            if self.rect.x < 100:
+                self.rect.x = 100
         else:
             self.rect.x += self.speed
+            if self.rect.x > 1100:
+                self.rect.x = 1100
 
     def get_status(self, chara_list):
         # get character status and get target list
         if self.AOE:
-            if self.name == 'Bomb':
+            if self.name == "Bomb":
                 # explode once collide with enemy
                 for chara in chara_list:
                     chara_x = chara.rect.centerx
                     chara_y = chara.rect.centery
-                    distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
+                    distance = int(
+                        sqrt(
+                            (chara_x - self.rect.centerx) ** 2
+                            + (chara_y - self.rect.centery) ** 2
+                        )
+                    )
 
                     if distance <= self.atk_range:
                         self.target.append(chara)
 
-            elif self.name == 'Unicorn':
+            elif self.name == "Unicorn":
                 # attak all character no matter distance
                 self.target = chara_list
 
@@ -78,42 +94,54 @@ class Character(pygame.sprite.Sprite):
                 for chara in chara_list:
                     chara_x = chara.rect.centerx
                     chara_y = chara.rect.centery
-                    distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
+                    distance = int(
+                        sqrt(
+                            (chara_x - self.rect.centerx) ** 2
+                            + (chara_y - self.rect.centery) ** 2
+                        )
+                    )
 
                     if distance < min_distance and distance <= self.atk_range:
                         min_distance = distance
-                        if self.target: self.target.clear()
+                        if self.target:
+                            self.target.clear()
                         self.target.append(chara)
 
         if self.target:
-            self.status = 'attacking'
+            self.status = "attacking"
         else:
-            self.status = 'moving'
-
+            self.status = "moving"
 
     def attack(self):
         self.last_atk_time = pygame.time.get_ticks()
         for chara in self.target:
             chara.health -= self.atk
 
-            if chara.type == 'player': chara.rect.x += self.knock_distance
-            else: chara.rect.x -= self.knock_distance
+            if chara.type == "player":
+                chara.rect.x += self.knock_distance
+                if chara.rect.x < 100:
+                    self.rect.x = 100
+            else:
+                chara.rect.x -= self.knock_distance
+                if chara.rect.x > 1100:
+                    self.rect.x = 1100
 
             self.target.remove(chara)
 
-        if self.name == 'Bomb':
-            self.kill()
+        if self.name == "Bomb":
+            self.health = 0
 
-
-    def update(self, chara_list):
+    def update(self, chara_list, player):
         self.get_status(chara_list)
 
-        if self.status == 'moving':
+        if self.status == "moving":
             self.move()
-        elif self.status == 'attacking':
+        elif self.status == "attacking":
             self.cooldowns()
             if self.can_attack:
                 self.attack()
 
         if self.health <= 0:
+            if self.type == "enemy":
+                player.money += self.add_money
             self.kill()
