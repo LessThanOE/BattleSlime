@@ -25,27 +25,36 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom = (init_x, init_y))
 
         self.health = chara_data[name]['health']
+        self.speed = chara_data[name]['speed']
+
         self.atk = chara_data[name]['atk']
         self.atk_range = chara_data[name]['atk_range']
-        self.speed = chara_data[name]['speed']
         self.AOE = chara_data[name]['AOE']
+        self.knock_distance = 30
+        self.last_atk_time = 0
+        self.cooldown = 700
+        self.can_attack = True
 
         self.target = []
 
         self.status = 'moving'
 
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_atk_time > self.cooldown:
+            self.can_attack = True
+        else:
+            self.can_attack = False
 
     def move(self):
-        print(self.name + ':move')
         # player chara move left, enemy chara move right
         if self.type == 'player':
             self.rect.x -= self.speed
         else:
             self.rect.x += self.speed
 
-
-    def collide(self, chara_list):
-        print(self.name + ':collide')
+    def get_status(self, chara_list):
+        # get character status and get target list
         if self.AOE:
             if self.name == 'Bomb':
                 # explode once collide with enemy
@@ -55,9 +64,11 @@ class Character(pygame.sprite.Sprite):
                     distance = int(sqrt((chara_x - self.rect.centerx)**2 + (chara_y - self.rect.centery)**2))
 
                     if distance <= self.atk_range:
-                        chara.health -= self.atk
+                        self.target.append(chara)
 
-                self.kill()
+            elif self.name == 'Unicorn':
+                # attak all character no matter distance
+                self.target = chara_list
 
         else:
             if not self.target:
@@ -74,33 +85,35 @@ class Character(pygame.sprite.Sprite):
                         if self.target: self.target.clear()
                         self.target.append(chara)
 
-                if self.target:
-                    self.status = 'attacking'
-                else:
-                    self.status = 'moving'
+        if self.target:
+            self.status = 'attacking'
+        else:
+            self.status = 'moving'
 
 
     def attack(self):
-        print(self.name + ':attack')
+        self.last_atk_time = pygame.time.get_ticks()
         for chara in self.target:
             chara.health -= self.atk
 
-            #if chara.type == 'player': chara.rect.x += 1
-            #else: chara.rect.x -= 1
+            if chara.type == 'player': chara.rect.x += self.knock_distance
+            else: chara.rect.x -= self.knock_distance
 
-            if chara.health <= 0:
-                self.target.remove(chara)
+            self.target.remove(chara)
+
+        if self.name == 'Bomb':
+            self.kill()
 
 
     def update(self, chara_list):
-
-        self.collide(chara_list)
+        self.get_status(chara_list)
 
         if self.status == 'moving':
             self.move()
-
-        if self.status == 'attacking':
-            self.attack()
+        elif self.status == 'attacking':
+            self.cooldowns()
+            if self.can_attack:
+                self.attack()
 
         if self.health <= 0:
             self.kill()
