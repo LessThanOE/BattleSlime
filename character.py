@@ -4,7 +4,7 @@ from math import sqrt
 
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, name, type):
+    def __init__(self, name, type, tower):
         super().__init__()
 
         self.name = name
@@ -16,7 +16,7 @@ class Character(pygame.sprite.Sprite):
                 chara_img[name]["image_player"]
             ).convert_alpha()
         else:
-            init_x = 50
+            init_x = -20
             self.image = pygame.image.load(
                 chara_img[name]["image_enemy"]
             ).convert_alpha()
@@ -29,20 +29,21 @@ class Character(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(self.image, 0, 0.3)
         self.rect = self.image.get_rect(midbottom=(init_x, init_y))
 
+        self.cost = chara_data[name]["cost"]
+        self.add_money = chara_data[name]["add_money"]
         self.health = chara_data[name]["health"]
         self.speed = chara_data[name]["speed"]
-        self.add_money = 10
-        self.cost = 10
 
         self.atk = chara_data[name]["atk"]
         self.atk_range = chara_data[name]["atk_range"]
-        self.AOE = chara_data[name]["AOE"]
-        self.knock_distance = 30
+        self.knock_distance = chara_data[name]["knock_distance"]
+
         self.last_atk_time = 0
         self.cooldown = 700
         self.can_attack = True
 
         self.target = []
+        self.tower = tower
 
         self.status = "moving"
 
@@ -57,16 +58,23 @@ class Character(pygame.sprite.Sprite):
         # player chara move left, enemy chara move right
         if self.type == "player":
             self.rect.x -= self.speed
-            if self.rect.x < 100:
-                self.rect.x = 100
+            if self.rect.centerx < left_border:
+                self.rect.centerx = left_border
         else:
             self.rect.x += self.speed
-            if self.rect.x > 1100:
-                self.rect.x = 1100
+            if self.rect.centerx > right_border:
+                self.rect.centerx = right_border
 
     def get_status(self, chara_list):
         # get character status and get target list
-        if self.AOE:
+        if (
+            self.type == "enemy"
+            and self.rect.centerx + self.atk_range > self.tower.rect.x
+        ):
+            self.target.clear()
+            self.target.append(self.tower)
+
+        else:
             if self.name == "Bomb":
                 # explode once collide with enemy
                 for chara in chara_list:
@@ -86,26 +94,26 @@ class Character(pygame.sprite.Sprite):
                 # attak all character no matter distance
                 self.target = chara_list
 
-        else:
-            if not self.target:
-                # if not AOE and no target
-                # find the closest character (if in atk_range) and attack
-                min_distance = 100000
-                for chara in chara_list:
-                    chara_x = chara.rect.centerx
-                    chara_y = chara.rect.centery
-                    distance = int(
-                        sqrt(
-                            (chara_x - self.rect.centerx) ** 2
-                            + (chara_y - self.rect.centery) ** 2
+            else:
+                if not self.target:
+                    # if current has no target
+                    # find the closest character (if in atk_range) and attack
+                    min_distance = 100000
+                    for chara in chara_list:
+                        chara_x = chara.rect.centerx
+                        chara_y = chara.rect.centery
+                        distance = int(
+                            sqrt(
+                                (chara_x - self.rect.centerx) ** 2
+                                + (chara_y - self.rect.centery) ** 2
+                            )
                         )
-                    )
 
-                    if distance < min_distance and distance <= self.atk_range:
-                        min_distance = distance
-                        if self.target:
-                            self.target.clear()
-                        self.target.append(chara)
+                        if distance < min_distance and distance <= self.atk_range:
+                            min_distance = distance
+                            if self.target:
+                                self.target.clear()
+                            self.target.append(chara)
 
         if self.target:
             self.status = "attacking"
@@ -115,18 +123,22 @@ class Character(pygame.sprite.Sprite):
     def attack(self):
         self.last_atk_time = pygame.time.get_ticks()
         for chara in self.target:
-            chara.health -= self.atk
+            if chara == self.tower:
+                self.tower.health -= self.atk
 
-            if chara.type == "player":
-                chara.rect.x += self.knock_distance
-                if chara.rect.x < 100:
-                    self.rect.x = 100
             else:
-                chara.rect.x -= self.knock_distance
-                if chara.rect.x > 1100:
-                    self.rect.x = 1100
+                chara.health -= self.atk
 
-            self.target.remove(chara)
+                if chara.type == "player":
+                    chara.rect.x += self.knock_distance
+                    if chara.rect.centerx < left_border:
+                        self.rect.centerx = left_border
+                else:
+                    chara.rect.x -= self.knock_distance
+                    if chara.rect.centerx > right_border:
+                        self.rect.centerx = right_border
+
+                self.target.remove(chara)
 
         if self.name == "Bomb":
             self.health = 0
