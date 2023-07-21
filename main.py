@@ -12,7 +12,7 @@ class Game:
         # general setup
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
-        pygame.display.set_caption("BattleSlime")
+        pygame.display.set_caption("Colorful War")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font("Font/monogram-extended.ttf", 48)
 
@@ -92,6 +92,7 @@ class Game:
                 cost_rect = cost_surf.get_rect(center=(button_x_pos[i], 675))
                 self.screen.blit(cost_surf, cost_rect)
 
+            # tower
             self.tower.draw(self.screen)
             self.tower.update()
             self.healthbar.update(self.tower.health / self.tower.max_health)
