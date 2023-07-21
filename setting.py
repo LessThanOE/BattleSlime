@@ -11,40 +11,40 @@ right_border = 1100
 # Character Data
 chara_img = {
     "Slime": {
-        "image_player": "Python/BattleSlime/Character/Slime.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Slime_e.PNG",
+        "image_player": "Entity/Character/Slime.PNG",
+        "image_enemy": "Entity/Character/Slime_enemy.PNG",
     },
     "Block": {
-        "image_player": "Python/BattleSlime/Character/Block.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Block_e.PNG",
+        "image_player": "Entity/Character/Block.PNG",
+        "image_enemy": "Entity/Character/Block_enemy.PNG",
     },
     "Maru": {
-        "image_player": "Python/BattleSlime/Character/Maru.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Maru_e.PNG",
+        "image_player": "Entity/Character/Maru.PNG",
+        "image_enemy": "Entity/Character/Maru_enemy.PNG",
     },
     "Takai": {
-        "image_player": "Python/BattleSlime/Character/Takai.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Takai_e.PNG",
+        "image_player": "Entity/Character/Takai.PNG",
+        "image_enemy": "Entity/Character/Takai_enemy.PNG",
     },
     "Tobu": {
-        "image_player": "Python/BattleSlime/Character/Tobu.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Tobu_e.PNG",
+        "image_player": "Entity/Character/Tobu.PNG",
+        "image_enemy": "Entity/Character/Tobu_enemy.PNG",
     },
     "Metal": {
-        "image_player": "Python/BattleSlime/Character/Metal.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Metal_e.PNG",
+        "image_player": "Entity/Character/Metal.PNG",
+        "image_enemy": "Entity/Character/Metal_enemy.PNG",
     },
     "Bomb": {
-        "image_player": "Python/BattleSlime/Character/Bomb.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Bomb_e.PNG",
+        "image_player": "Entity/Character/Bomb.PNG",
+        "image_enemy": "Entity/Character/Bomb_enemy.PNG",
     },
     "Twin": {
-        "image_player": "Python/BattleSlime/Character/Twin.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Twin_e.PNG",
+        "image_player": "Entity/Character/Twin.PNG",
+        "image_enemy": "Entity/Character/Twin_enemy.PNG",
     },
     "Unicorn": {
-        "image_player": "Python/BattleSlime/Character/Unicorn.PNG",
-        "image_enemy": "Python/BattleSlime/Character/Unicorn_e.PNG",
+        "image_player": "Entity/Character/Unicorn.PNG",
+        "image_enemy": "Entity/Character/Unicorn_enemy.PNG",
     },
 }
 
@@ -174,14 +174,14 @@ enemy_list = [
 
 # Button Setting
 button_data = {
-    "Slime": "Python/BattleSlime/Button/Slime_bt.PNG",
-    "Block": "Python/BattleSlime/Button/Block_bt.PNG",
-    "Maru": "Python/BattleSlime/Button/Maru_bt.PNG",
-    "Takai": "Python/BattleSlime/Button/Takai_bt.PNG",
-    "Tobu": "Python/BattleSlime/Button/Tobu_bt.PNG",
-    "Metal": "Python/BattleSlime/Button/Metal_bt.PNG",
-    "Bomb": "Python/BattleSlime/Button/Bomb_bt.PNG",
-    "Twin": "Python/BattleSlime/Button/Twin_bt.PNG",
-    "Unicorn": "Python/BattleSlime/Button/Unicorn_bt.PNG",
+    "Slime": "Button/Slime_button.PNG",
+    "Block": "Button/Block_button.PNG",
+    "Maru": "Button/Maru_button.PNG",
+    "Takai": "Button/Takai_button.PNG",
+    "Tobu": "Button/Tobu_button.PNG",
+    "Metal": "Button/Metal_button.PNG",
+    "Bomb": "Button/Bomb_button.PNG",
+    "Twin": "Button/Twin_button.PNG",
+    "Unicorn": "Button/Unicorn_button.PNG",
 }
 button_x_pos = [340, 490, 640, 790, 940]

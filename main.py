@@ -3,7 +3,7 @@ import sys
 from setting import *
 from character import Character
 from button import Button
-from tower import Tower
+from tower import Tower, HealthBar
 from random import randint, choice
 
 
@@ -14,9 +14,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
         pygame.display.set_caption("BattleSlime")
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(
-            "Python/BattleSlime/Font/monogram-extended.ttf", 48
-        )
+        self.font = pygame.font.Font("Font/monogram-extended.ttf", 48)
 
         # initial player status
         self.score = 0
@@ -35,7 +33,8 @@ class Game:
             self.button.add(Button(self.button_data[i], button_x_pos[i]))
 
         # set tower
-        self.tower = Tower(self.screen)
+        self.tower = Tower()
+        self.healthbar = HealthBar(self.screen)
 
         # timer
         self.enemy_timer = pygame.USEREVENT + 1
@@ -93,7 +92,9 @@ class Game:
                 cost_rect = cost_surf.get_rect(center=(button_x_pos[i], 675))
                 self.screen.blit(cost_surf, cost_rect)
 
+            self.tower.draw(self.screen)
             self.tower.update()
+            self.healthbar.update(self.tower.health / self.tower.max_health)
 
             self.enemy.draw(self.screen)
             self.enemy.update(self.chara.sprites(), self)

@@ -67,10 +67,7 @@ class Character(pygame.sprite.Sprite):
 
     def get_status(self, chara_list):
         # get character status and get target list
-        if (
-            self.type == "enemy"
-            and self.rect.centerx + self.atk_range > self.tower.rect.x
-        ):
+        if self.type == "enemy" and pygame.sprite.collide_rect(self, self.tower):
             self.target.clear()
             self.target.append(self.tower)
 
@@ -124,7 +121,9 @@ class Character(pygame.sprite.Sprite):
         self.last_atk_time = pygame.time.get_ticks()
         for chara in self.target:
             if chara == self.tower:
+                # tower being attack
                 self.tower.health -= self.atk
+                self.tower.rect.x += 5
 
             else:
                 chara.health -= self.atk
@@ -138,7 +137,7 @@ class Character(pygame.sprite.Sprite):
                     if chara.rect.centerx > right_border:
                         self.rect.centerx = right_border
 
-                self.target.remove(chara)
+            self.target.remove(chara)
 
         if self.name == "Bomb":
             self.health = 0
