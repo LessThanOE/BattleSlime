@@ -15,7 +15,11 @@ class Tower:
         canvas.blit(self.image, self.rect)
 
     def update(self):
-        self.rect.midbottom = (1100, horizon_y)
+        if self.health <= 0:
+            self.image = pygame.image.load("Entity/Tower_break.PNG").convert_alpha()
+            self.image = pygame.transform.rotozoom(self.image, 0, 0.8)
+
+        self.rect = self.image.get_rect(midbottom=(1100, horizon_y))
         print(self.health)
 
 
