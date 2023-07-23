@@ -3,6 +3,9 @@ WIDTH = 1280
 HEIGTH = 720
 FPS = 60
 
+BLUE = (61, 202, 245, 96)
+RED = (217, 80, 102, 85)
+
 # Map Data
 horizon_y = 500
 left_border = 100

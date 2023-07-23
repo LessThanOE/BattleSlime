@@ -20,7 +20,6 @@ class Tower:
             self.image = pygame.transform.rotozoom(self.image, 0, 0.8)
 
         self.rect = self.image.get_rect(midbottom=(1100, horizon_y))
-        print(self.health)
 
 
 class HealthBar:
@@ -28,5 +27,5 @@ class HealthBar:
         self.canvas = canvas
 
     def update(self, ratio):
-        pygame.draw.rect(self.canvas, (217, 80, 102, 85), (0, 0, WIDTH * ratio, 12))
+        pygame.draw.rect(self.canvas, RED, (0, 0, WIDTH * ratio, 12))
         pygame.draw.rect(self.canvas, "black", (0, 0, WIDTH, 12), 3)
