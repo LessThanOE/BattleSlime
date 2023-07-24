@@ -33,7 +33,7 @@ class Main:
         # button settings
         self.startbutton = TextButton("START", 640, 400)
         self.profilebutton = TextButton("PROFILE", 640, 500)
-        self.backbutton = TextButton("BACK", 640, 600)
+        self.backbutton = TextButton("FINISH", 640, 600)
 
         # player settings
         self.team_list = []
@@ -91,6 +91,8 @@ class Main:
                     self.view = "profile"
 
             elif self.view == "profile":
+                if self.team_list.count("Unknown") > 0:
+                    self.team_list.remove("Unknown")
                 for i in range(0, 9):
                     name = chara_list[i]
                     selected = self.charabutton[i].update(
