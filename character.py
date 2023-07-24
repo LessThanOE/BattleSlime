@@ -9,6 +9,7 @@ class Character(pygame.sprite.Sprite):
 
         self.name = name
         self.type = type
+        self.flyable = chara_data[name]["flyable"]
 
         if type == "player":
             init_x = 1150
@@ -21,7 +22,7 @@ class Character(pygame.sprite.Sprite):
                 chara_img[name]["image_enemy"]
             ).convert_alpha()
 
-        if chara_data[name]["flyable"]:
+        if self.flyable:
             init_y = 400
         else:
             init_y = horizon_y
@@ -88,8 +89,10 @@ class Character(pygame.sprite.Sprite):
                         self.target.append(chara)
 
             elif self.name == "Unicorn":
-                # attak all character no matter distance
-                self.target = chara_list
+                # attak all flying character no matter distance
+                for chara in chara_list:
+                    if chara.flyable:
+                        self.target.append(chara)
 
             else:
                 if not self.target:

@@ -2,7 +2,7 @@ import pygame
 from setting import *
 
 
-class Button(pygame.sprite.Sprite):
+class CharaButton(pygame.sprite.Sprite):
     def __init__(self, name, x):
         super().__init__()
 
@@ -18,6 +18,34 @@ class Button(pygame.sprite.Sprite):
         pygame.draw.rect(
             self.image, "black", (0, 0, self.rect.width, self.rect.height), 3
         )
+
+
+class ImageButton:
+    def __init__(self, image_path, x, y):
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.clicked = False
+
+    def draw(self, canvas):
+        action = False
+
+        # get mouse position
+        pos = pygame.mouse.get_pos()
+
+        # check mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        # draw button
+        canvas.blit(self.image, self.rect)
+
+        return action
 
 
 class TextButton:

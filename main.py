@@ -3,7 +3,7 @@ import sys
 from game import Game
 from setting import *
 from character import Character
-from button import Button, TextButton
+from button import CharaButton, TextButton
 from tower import Tower, HealthBar
 from random import randint, choice
 
@@ -52,7 +52,9 @@ class Main:
 
             if self.startbutton.draw(self.screen):
                 game = Game(self.button_list)
-                self.highscore = game.run()
+                gamescore = game.run()
+                if gamescore > self.highscore:
+                    self.highscore = gamescore
                 self.highscore_surf = self.textfont.render(
                     f"High Score: {self.highscore}", False, "black"
                 )
