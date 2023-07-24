@@ -3,7 +3,7 @@ import sys
 from game import Game
 from setting import *
 from character import Character
-from button import CharaButton, TextButton, CharaButton2
+from button import CharaButton, TextButton, ProfileButton
 from tower import Tower, HealthBar
 from random import randint, choice
 
@@ -33,26 +33,27 @@ class Main:
         # button settings
         self.startbutton = TextButton("START", 640, 400)
         self.profilebutton = TextButton("PROFILE", 640, 500)
+        self.backbutton = TextButton("BACK", 640, 600)
 
         # player settings
-        self.button_list = ("Slime", "Block", "Takai", "Unicorn", "Maru")
+        self.team_list = []
+        self.team_is_full = False
 
         # profile settings
         self.charabutton = {}
-        self.charalist = (
-            "Slime",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-            "Unknown",
-        )
+        self.chara_unlock = [
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
+            False,
+            False,
+        ]
         for i in range(0, 9):
-            print(profile_button_pos[i])
-            self.charabutton[i] = CharaButton2(self.charalist[i], i)
+            self.charabutton[i] = ProfileButton(self.chara_unlock[i], i)
 
     def run(self):
         while True:
@@ -75,7 +76,7 @@ class Main:
                 self.screen.blit(self.caption_surf, self.caption_rect)
 
                 if self.startbutton.draw(self.screen):
-                    game = Game(self.button_list)
+                    game = Game(self.team_list)
                     gamescore = game.run()
                     if gamescore > self.highscore:
                         self.highscore = gamescore
@@ -91,7 +92,24 @@ class Main:
 
             elif self.view == "profile":
                 for i in range(0, 9):
-                    self.charabutton[i].draw(self.screen)
+                    name = chara_list[i]
+                    selected = self.charabutton[i].update(
+                        self.screen, self.team_is_full
+                    )
+                    if selected and self.team_list.count(name) == 0:
+                        self.team_list.append(name)
+                    if not selected and self.team_list.count(name) > 0:
+                        self.team_list.remove(name)
+
+                    if len(self.team_list) >= 5:
+                        self.team_is_full = True
+                    else:
+                        self.team_is_full = False
+
+                if self.backbutton.draw(self.screen):
+                    while len(self.team_list) <= 5:
+                        self.team_list.append("Unknown")
+                    self.view = "menu"
 
             pygame.display.update()
             self.clock.tick(FPS)

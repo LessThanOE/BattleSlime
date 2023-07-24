@@ -62,7 +62,10 @@ class Game:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         # generate player character
                         for button in self.button.sprites():
-                            if button.rect.collidepoint(pygame.mouse.get_pos()):
+                            if (
+                                button.rect.collidepoint(pygame.mouse.get_pos())
+                                and button.name != "Unknown"
+                            ):
                                 if self.money >= button.cost:
                                     self.money -= button.cost
                                     button.rect.centery = 612
@@ -109,11 +112,12 @@ class Game:
                 self.button.draw(self.screen)
                 button_list = self.button.sprites()
                 for i in range(0, 5):
-                    cost_surf = self.textfont.render(
-                        f"{button_list[i].cost}", False, "black"
-                    )
-                    cost_rect = cost_surf.get_rect(center=(button_x_pos[i], 675))
-                    self.screen.blit(cost_surf, cost_rect)
+                    if button_list[i].name != "Unknown":
+                        cost_surf = self.textfont.render(
+                            f"{button_list[i].cost}", False, "black"
+                        )
+                        cost_rect = cost_surf.get_rect(center=(button_x_pos[i], 675))
+                        self.screen.blit(cost_surf, cost_rect)
 
                 if self.pausebutton.draw(self.screen):
                     self.status = "paused"

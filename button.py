@@ -6,11 +6,9 @@ class CharaButton(pygame.sprite.Sprite):
     def __init__(self, name, x):
         super().__init__()
 
-        if name == "Unknown":
-            pass
-
         self.name = name
-        self.cost = chara_data[name]["cost"]
+        if name != "Unknown":
+            self.cost = chara_data[name]["cost"]
         self.x = x
 
         image_path = button_data[name]
@@ -23,49 +21,59 @@ class CharaButton(pygame.sprite.Sprite):
         )
 
 
-class CharaButton2:
-    def __init__(self, name, id):
-        self.unlock = False
-        self.choose = False
+class ProfileButton:
+    def __init__(self, unlock, id):
+        self.unlock = unlock
+        self.select = False
         self.clicked = False
 
         self.color = "black"
-        self.name = name
-        self.id = id
+        self.name = chara_list[id]
 
-        image_path = button_data[name]
+        if self.unlock:
+            image_path = button_data[self.name]
+        else:
+            image_path = button_data["Unknown"]
+
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
-        self.rect = self.image.get_rect(center=(profile_button_pos[self.id]))
+        self.rect = self.image.get_rect(center=(profile_button_pos[id]))
 
-    def draw(self, canvas):
-        action = False
-
-        # get mouse position
+    def update(self, canvas, is_full):
         pos = pygame.mouse.get_pos()
 
-        # check mouseover and clicked conditions
         if self.rect.collidepoint(pos):
-            if self.name == "Unknown":
-                self.color = RED
+            if self.unlock:
+                if is_full and self.select == False:
+                    error_message = pygame.font.Font(
+                        "Font/monogram-extended.ttf", 64
+                    ).render("Team is Fulled", False, RED)
+                    error_message_rect = error_message.get_rect(center=(640, 100))
+                    canvas.blit(error_message, error_message_rect)
+                    self.color = RED
+                else:
+                    self.color = BLUE
+                    if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                        self.clicked = True
+                        if self.select:
+                            self.select = False
+                        else:
+                            self.select = True
             else:
-                self.color = BLUE
-                if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                    if self.choose:
-                        self.choose = False
-                    else:
-                        self.choose = True
-                    self.clicked = True
-
-                action = True
+                error_message = pygame.font.Font(
+                    "Font/monogram-extended.ttf", 64
+                ).render("Not Unlocked", False, RED)
+                error_message_rect = error_message.get_rect(center=(640, 100))
+                canvas.blit(error_message, error_message_rect)
+                self.color = RED
         else:
-            self.color = "black"
+            self.color = BLACK
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
-        if self.choose:
-            self.color = "green"
+        if self.select:
+            self.color = GREEN
 
         # draw button
         canvas.blit(self.image, self.rect)
@@ -73,7 +81,7 @@ class CharaButton2:
             self.image, self.color, (0, 0, self.rect.width, self.rect.height), 3
         )
 
-        return action
+        return self.select
 
 
 class ImageButton:
