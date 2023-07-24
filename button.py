@@ -6,6 +6,9 @@ class CharaButton(pygame.sprite.Sprite):
     def __init__(self, name, x):
         super().__init__()
 
+        if name == "Unknown":
+            pass
+
         self.name = name
         self.cost = chara_data[name]["cost"]
         self.x = x
@@ -18,6 +21,59 @@ class CharaButton(pygame.sprite.Sprite):
         pygame.draw.rect(
             self.image, "black", (0, 0, self.rect.width, self.rect.height), 3
         )
+
+
+class CharaButton2:
+    def __init__(self, name, id):
+        self.unlock = False
+        self.choose = False
+        self.clicked = False
+
+        self.color = "black"
+        self.name = name
+        self.id = id
+
+        image_path = button_data[name]
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
+        self.rect = self.image.get_rect(center=(profile_button_pos[self.id]))
+
+    def draw(self, canvas):
+        action = False
+
+        # get mouse position
+        pos = pygame.mouse.get_pos()
+
+        # check mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if self.name == "Unknown":
+                self.color = RED
+            else:
+                self.color = BLUE
+                if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                    if self.choose:
+                        self.choose = False
+                    else:
+                        self.choose = True
+                    self.clicked = True
+
+                action = True
+        else:
+            self.color = "black"
+
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        if self.choose:
+            self.color = "green"
+
+        # draw button
+        canvas.blit(self.image, self.rect)
+        pygame.draw.rect(
+            self.image, self.color, (0, 0, self.rect.width, self.rect.height), 3
+        )
+
+        return action
 
 
 class ImageButton:

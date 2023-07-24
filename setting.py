@@ -177,5 +177,18 @@ button_data = {
     "Bomb": "Button/Bomb_button.PNG",
     "Twin": "Button/Twin_button.PNG",
     "Unicorn": "Button/Unicorn_button.PNG",
+    "Unknown": "Button/Unknown.PNG",
 }
 button_x_pos = [340, 490, 640, 790, 940]
+
+profile_button_pos = [
+    (340, 200),
+    (490, 200),
+    (640, 200),
+    (790, 200),
+    (940, 200),
+    (340, 400),
+    (490, 400),
+    (640, 400),
+    (790, 400),
+]
