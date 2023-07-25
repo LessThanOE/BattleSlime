@@ -1,4 +1,5 @@
 # Game Setup
+GAME_NAME = "COLORFUL WAR"
 WIDTH = 1280
 HEIGTH = 720
 FPS = 60
@@ -10,10 +11,22 @@ BLACK = (0, 0, 0, 255)
 
 # Map Data
 horizon_y = 500
-left_border = 100
+left_border = 200
 right_border = 1100
 
 # Character Data
+chara_list = [
+    "Slime",
+    "Block",
+    "Maru",
+    "Takai",
+    "Tobu",
+    "Metal",
+    "Bomb",
+    "Twin",
+    "Unicorn",
+]
+
 chara_img = {
     "Slime": {
         "image_player": "Entity/Character/Slime.PNG",
@@ -56,8 +69,8 @@ chara_img = {
 chara_data = {
     "Slime": {
         "cost": 10,
-        "add_money": 10,
-        "health": 100,
+        "add_money": 5,
+        "health": 150,
         "speed": 2,
         "atk": 10,
         "atk_range": 100,
@@ -66,53 +79,53 @@ chara_data = {
         "flyable": False,
     },
     "Block": {
-        "cost": 10,
+        "cost": 20,
         "add_money": 10,
-        "health": 100,
-        "speed": 2,
-        "atk": 10,
-        "atk_range": 100,
-        "knock_distance": 30,
-        "cooldown": 700,
+        "health": 400,
+        "speed": 1,
+        "atk": 5,
+        "atk_range": 120,
+        "knock_distance": 50,
+        "cooldown": 1000,
         "flyable": False,
     },
     "Maru": {
-        "cost": 10,
+        "cost": 20,
         "add_money": 10,
         "health": 100,
-        "speed": 2,
+        "speed": 4,
         "atk": 10,
         "atk_range": 100,
         "knock_distance": 30,
-        "cooldown": 700,
+        "cooldown": 500,
         "flyable": False,
     },
     "Takai": {
-        "cost": 10,
-        "add_money": 10,
-        "health": 100,
+        "cost": 30,
+        "add_money": 15,
+        "health": 200,
         "speed": 2,
-        "atk": 10,
-        "atk_range": 100,
-        "knock_distance": 30,
-        "cooldown": 700,
+        "atk": 25,
+        "atk_range": 200,
+        "knock_distance": 100,
+        "cooldown": 1000,
         "flyable": False,
     },
     "Tobu": {
-        "cost": 10,
-        "add_money": 10,
+        "cost": 40,
+        "add_money": 20,
         "health": 100,
         "speed": 2,
-        "atk": 10,
+        "atk": 15,
         "atk_range": 200,
-        "knock_distance": 100,
+        "knock_distance": 50,
         "cooldown": 700,
         "flyable": True,
     },
     "Metal": {
-        "cost": 10,
-        "add_money": 10,
-        "health": 100,
+        "cost": 50,
+        "add_money": 25,
+        "health": 500,
         "speed": 2,
         "atk": 10,
         "atk_range": 100,
@@ -121,63 +134,39 @@ chara_data = {
         "flyable": False,
     },
     "Bomb": {
-        "cost": 10,
+        "cost": 20,
         "add_money": 10,
-        "health": 100,
+        "health": 10,
         "speed": 2,
-        "atk": 10,
+        "atk": 150,
         "atk_range": 100,
         "knock_distance": 30,
         "cooldown": 700,
         "flyable": False,
     },
     "Twin": {
-        "cost": 10,
-        "add_money": 10,
-        "health": 100,
+        "cost": 50,
+        "add_money": 25,
+        "health": 300,
         "speed": 2,
-        "atk": 10,
+        "atk": 30,
         "atk_range": 100,
-        "knock_distance": 30,
+        "knock_distance": 50,
         "cooldown": 700,
         "flyable": False,
     },
     "Unicorn": {
-        "cost": 10,
-        "add_money": 10,
-        "health": 100,
+        "cost": 100,
+        "add_money": 50,
+        "health": 150,
         "speed": 2,
-        "atk": 10,
-        "atk_range": 100,
-        "knock_distance": 30,
-        "cooldown": 700,
+        "atk": 20,
+        "atk_range": 1000,
+        "knock_distance": 0,
+        "cooldown": 1200,
         "flyable": False,
     },
 }
-
-enemy_list = [
-    "Slime",
-    "Block",
-    "Maru",
-    "Takai",
-    "Tobu",
-    "Metal",
-    "Bomb",
-    "Twin",
-    "Unicorn",
-]
-
-chara_list = [
-    "Slime",
-    "Block",
-    "Maru",
-    "Takai",
-    "Tobu",
-    "Metal",
-    "Bomb",
-    "Twin",
-    "Unicorn",
-]
 
 
 # Button Setting
@@ -195,7 +184,7 @@ button_data = {
 }
 button_x_pos = [340, 490, 640, 790, 940]
 
-profile_button_pos = [
+Team_button_pos = [
     (340, 250),
     (490, 250),
     (640, 250),

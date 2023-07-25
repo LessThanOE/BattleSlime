@@ -2,10 +2,7 @@ import pygame
 import sys
 from game import Game
 from setting import *
-from character import Character
-from button import CharaButton, TextButton, ProfileButton
-from tower import Tower, HealthBar
-from random import randint, choice
+from button import TextButton, TeamButton
 
 
 class Main:
@@ -13,7 +10,7 @@ class Main:
         # general setup
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
-        pygame.display.set_caption("Colorful War")
+        pygame.display.set_caption(GAME_NAME)
         self.clock = pygame.time.Clock()
         self.textfont = pygame.font.Font("Font/monogram-extended.ttf", 48)
         self.captionfont = pygame.font.Font("Font/monogram-extended.ttf", 144)
@@ -21,39 +18,40 @@ class Main:
         self.view = "menu"
 
         # text display settings
-        self.caption_surf = self.captionfont.render("Colorful War", False, "black")
+        self.caption_surf = self.captionfont.render(GAME_NAME, False, BLACK)
         self.caption_rect = self.caption_surf.get_rect(center=(640, 150))
 
         self.highscore = 0
         self.highscore_surf = self.textfont.render(
             f"High Score: {self.highscore}", False, "black"
         )
-        self.highscore_rect = self.highscore_surf.get_rect(center=(640, 300))
+        self.highscore_rect = self.highscore_surf.get_rect(center=(640, 250))
 
         # button settings
-        self.startbutton = TextButton("START", 640, 400)
-        self.profilebutton = TextButton("PROFILE", 640, 500)
+        self.startbutton = TextButton("START", 640, 370)
+        self.Teambutton = TextButton("CHARACTER", 640, 470)
         self.backbutton = TextButton("FINISH", 640, 600)
 
         # player settings
-        self.team_list = []
+        self.team_list = ["Slime", "Unknown", "Unknown", "Unknown", "Unknown"]
         self.team_is_full = False
 
-        # profile settings
+        # Team settings
         self.charabutton = {}
         self.chara_unlock = [
             True,
-            True,
-            True,
-            True,
-            True,
-            True,
+            False,
+            False,
+            False,
+            False,
+            False,
             False,
             False,
             False,
         ]
+        self.unlock_notify = False
         for i in range(0, 9):
-            self.charabutton[i] = ProfileButton(self.chara_unlock[i], i)
+            self.charabutton[i] = TeamButton(self.chara_unlock[i], i)
 
     def run(self):
         while True:
@@ -67,7 +65,7 @@ class Main:
                 # Menu display
                 pygame.draw.line(
                     self.screen,
-                    "gray",
+                    BLACK,
                     (0, horizon_y + 100),
                     (WIDTH, horizon_y + 100),
                     3,
@@ -78,19 +76,35 @@ class Main:
                 if self.startbutton.draw(self.screen):
                     game = Game(self.team_list)
                     gamescore = game.run()
+
                     if gamescore > self.highscore:
                         self.highscore = gamescore
+                        i = 0
+                        while (i * 50) <= self.highscore and i <= 8:
+                            if self.chara_unlock[i] == False:
+                                self.unlock_notify = True
+                            self.chara_unlock[i] = self.charabutton[i].Unlock()
+                            i = i + 1
+
                     self.highscore_surf = self.textfont.render(
                         f"High Score: {self.highscore}", False, "black"
                     )
                     self.highscore_rect = self.highscore_surf.get_rect(
-                        center=(640, 300)
+                        center=(640, 250)
                     )
 
-                if self.profilebutton.draw(self.screen):
-                    self.view = "profile"
+                if self.Teambutton.draw(self.screen):
+                    self.view = "Team"
 
-            elif self.view == "profile":
+                if self.unlock_notify:
+                    message = pygame.font.Font("Font/monogram-extended.ttf", 48).render(
+                        "New Character Unlock !!!", False, BLUE
+                    )
+                    message_rect = message.get_rect(center=(640, 530))
+                    self.screen.blit(message, message_rect)
+
+            elif self.view == "Team":
+                self.unlock_notify = False
                 if self.team_list.count("Unknown") > 0:
                     self.team_list.remove("Unknown")
                 for i in range(0, 9):

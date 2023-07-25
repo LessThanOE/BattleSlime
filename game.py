@@ -13,7 +13,7 @@ class Game:
         pygame.init()
         self.status = "stoping"
         self.screen = pygame.display.set_mode((WIDTH, HEIGTH))
-        pygame.display.set_caption("Colorful War")
+        pygame.display.set_caption(GAME_NAME)
         self.clock = pygame.time.Clock()
         self.textfont = pygame.font.Font("Font/monogram-extended.ttf", 48)
         self.captionfont = pygame.font.Font("Font/monogram-extended.ttf", 144)
@@ -22,11 +22,12 @@ class Game:
         self.score = 0
         self.level = 0
         self.money = 10
-        self.money_color = "black"
+        self.money_color = BLACK
 
         # set character groups
         self.chara = pygame.sprite.Group()
         self.enemy = pygame.sprite.Group()
+        self.enemy_list = ["Slime"]
 
         # set button
         self.button = pygame.sprite.Group()
@@ -42,12 +43,13 @@ class Game:
         # timer
         self.enemy_timer = pygame.USEREVENT + 1
         pygame.time.set_timer(self.enemy_timer, 1000)
+        self.enemy_cooldown_bound = 8000
 
         self.score_timer = pygame.USEREVENT + 2
         pygame.time.set_timer(self.score_timer, 1000)
 
         self.money_timer = pygame.USEREVENT + 3
-        pygame.time.set_timer(self.money_timer, 500)
+        pygame.time.set_timer(self.money_timer, 650)
 
     def run(self):
         self.status = "running"
@@ -59,8 +61,8 @@ class Game:
                     sys.exit()
 
                 if self.status == "running":
+                    # generate player character
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        # generate player character
                         for button in self.button.sprites():
                             if (
                                 button.rect.collidepoint(pygame.mouse.get_pos())
@@ -73,48 +75,55 @@ class Game:
                                         Character(button.name, "player", self.tower)
                                     )
                                 else:
-                                    self.money_color = "red"
+                                    self.money_color = RED
 
+                    # button animated
                     if event.type == pygame.MOUSEBUTTONUP:
                         for button in self.button.sprites():
                             button.rect.centery = 610
 
+                    # generate enemy character
                     if event.type == self.enemy_timer:
-                        # generate enemy character
-                        enemy_name = enemy_list[randint(0, self.level)]
+                        enemy_name = choice(self.enemy_list)
                         self.enemy.add(Character(enemy_name, "enemy", self.tower))
                         pygame.time.set_timer(
-                            self.enemy_timer, randint(1000, (10 - self.level) * 1000)
+                            self.enemy_timer, randint(1000, self.enemy_cooldown_bound)
                         )
 
+                    # score count
                     if event.type == self.score_timer:
                         self.score += 1
 
+                    # money count
                     if event.type == self.money_timer:
                         self.money += 1
-                        self.money_color = "black"
+                        self.money_color = BLACK
 
                 elif self.status == "paused":
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        self.status = "running"
+                        if event.button == 1:
+                            self.status = "running"
+                        elif event.button == 3:
+                            return self.score
 
                 elif self.status == "end":
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         return self.score
 
             if self.status == "running":
-                # draw background
+                # background
                 self.screen.fill("white")
                 pygame.draw.line(
-                    self.screen, "black", (0, horizon_y), (WIDTH, horizon_y), 3
+                    self.screen, BLACK, (0, horizon_y), (WIDTH, horizon_y), 3
                 )
 
+                # buttons
                 self.button.draw(self.screen)
                 button_list = self.button.sprites()
                 for i in range(0, 5):
                     if button_list[i].name != "Unknown":
                         cost_surf = self.textfont.render(
-                            f"{button_list[i].cost}", False, "black"
+                            f"{button_list[i].cost}", False, BLACK
                         )
                         cost_rect = cost_surf.get_rect(center=(button_x_pos[i], 675))
                         self.screen.blit(cost_surf, cost_rect)
@@ -130,25 +139,32 @@ class Game:
                 if self.tower.health < 0:
                     self.status = "end"
 
+                # enemy and player chara
                 self.enemy.draw(self.screen)
                 self.enemy.update(self.chara.sprites(), self)
 
                 self.chara.draw(self.screen)
                 self.chara.update(self.enemy.sprites(), self)
 
-                # score system
-                score_surf = self.textfont.render(
-                    f"Score: {self.score}", False, "black"
-                )
+                # score
+                score_surf = self.textfont.render(f"Score: {self.score}", False, BLACK)
                 score_rect = score_surf.get_rect(center=(900, 50))
                 self.screen.blit(score_surf, score_rect)
 
-                # level system
-                self.level = int(self.score / 10)
-                if self.level >= 8:
-                    self.level = 8
+                # level
+                if self.score % 30 == 0:
+                    self.level = int(self.score / 30)
+                    if self.level % 2 == 0:
+                        self.enemy_cooldown_bound = 8000
+                        if self.level <= 16:
+                            self.enemy_list.append(chara_list[int(self.level / 2)])
+                        else:
+                            self.enemy_list.append(chara_list[randint(0, 8)])
 
-                # money system
+                    else:
+                        self.enemy_cooldown_bound = 4000
+
+                # money
                 money_surf = self.textfont.render(
                     f"Money: {self.money}", False, self.money_color
                 )
@@ -157,20 +173,21 @@ class Game:
 
             elif self.status == "paused":
                 pause1_surf = self.captionfont.render("Pause", False, BLUE)
-                pause1_rect = pause1_surf.get_rect(center=(640, 250))
-                pause2_surf = self.textfont.render(
-                    "click and back to game", False, BLUE
+                pause1_rect = pause1_surf.get_rect(center=(640, 200))
+                pause2_surf = self.textfont.render("LEFT CLICK  continue", False, BLACK)
+                pause2_rect = pause2_surf.get_rect(center=(640, 300))
+                pause3_surf = self.textfont.render(
+                    "RIGHT CLICK  back to menu", False, BLACK
                 )
-                pause2_rect = pause2_surf.get_rect(center=(640, 350))
+                pause3_rect = pause3_surf.get_rect(center=(640, 350))
                 self.screen.blit(pause1_surf, pause1_rect)
                 self.screen.blit(pause2_surf, pause2_rect)
+                self.screen.blit(pause3_surf, pause3_rect)
 
             elif self.status == "end":
-                end1_surf = self.captionfont.render("You Lose", False, "black")
+                end1_surf = self.captionfont.render("You Lose", False, RED)
                 end1_rect = end1_surf.get_rect(center=(640, 200))
-                end2_surf = self.textfont.render(
-                    "click and back to menu", False, "black"
-                )
+                end2_surf = self.textfont.render("CLICK  back to menu", False, BLACK)
                 end2_rect = end2_surf.get_rect(center=(640, 300))
                 self.screen.blit(end1_surf, end1_rect)
                 self.screen.blit(end2_surf, end2_rect)

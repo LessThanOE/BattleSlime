@@ -89,10 +89,8 @@ class Character(pygame.sprite.Sprite):
                         self.target.append(chara)
 
             elif self.name == "Unicorn":
-                # attak all flying character no matter distance
-                for chara in chara_list:
-                    if chara.flyable:
-                        self.target.append(chara)
+                # attak all character no matter distance
+                self.target = chara_list
 
             else:
                 if not self.target:

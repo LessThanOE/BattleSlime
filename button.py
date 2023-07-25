@@ -21,7 +21,7 @@ class CharaButton(pygame.sprite.Sprite):
         )
 
 
-class ProfileButton:
+class TeamButton:
     def __init__(self, unlock, id):
         self.unlock = unlock
         self.select = False
@@ -29,6 +29,7 @@ class ProfileButton:
 
         self.color = "black"
         self.name = chara_list[id]
+        self.id = id
 
         if self.unlock:
             image_path = button_data[self.name]
@@ -37,7 +38,14 @@ class ProfileButton:
 
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
-        self.rect = self.image.get_rect(center=(profile_button_pos[id]))
+        self.rect = self.image.get_rect(center=(Team_button_pos[self.id]))
+
+    def Unlock(self):
+        self.unlock = True
+        self.image = pygame.image.load(button_data[self.name]).convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
+        self.rect = self.image.get_rect(center=(Team_button_pos[self.id]))
+        return self.unlock
 
     def update(self, canvas, is_full):
         pos = pygame.mouse.get_pos()
@@ -115,7 +123,7 @@ class ImageButton:
 class TextButton:
     def __init__(self, text, x, y):
         self.font = pygame.font.Font("Font/monogram-extended.ttf", 64)
-        self.color = "black"
+        self.color = "white"
         self.text = self.font.render(f"{text}", False, "black")
         self.textrect = self.text.get_rect(center=(x, y))
 
@@ -138,7 +146,7 @@ class TextButton:
                 self.clicked = True
                 action = True
         else:
-            self.color = "black"
+            self.color = "white"
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
