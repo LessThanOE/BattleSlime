@@ -101,8 +101,8 @@ chara_data = {
         "flyable": False,
     },
     "Takai": {
-        "cost": 30,
-        "add_money": 15,
+        "cost": 70,
+        "add_money": 35,
         "health": 200,
         "speed": 2,
         "atk": 25,
@@ -136,7 +136,7 @@ chara_data = {
     "Bomb": {
         "cost": 20,
         "add_money": 10,
-        "health": 10,
+        "health": 150,
         "speed": 2,
         "atk": 150,
         "atk_range": 100,
@@ -156,8 +156,8 @@ chara_data = {
         "flyable": False,
     },
     "Unicorn": {
-        "cost": 100,
-        "add_money": 50,
+        "cost": 500,
+        "add_money": 200,
         "health": 150,
         "speed": 2,
         "atk": 20,
