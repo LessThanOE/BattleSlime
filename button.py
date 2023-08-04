@@ -93,9 +93,9 @@ class TeamButton:
 
 
 class ImageButton:
-    def __init__(self, image_path, x, y):
+    def __init__(self, image_path, x, y, rate):
         self.image = pygame.image.load(image_path).convert_alpha()
-        self.image = pygame.transform.rotozoom(self.image, 0, 0.2)
+        self.image = pygame.transform.rotozoom(self.image, 0, rate)
         self.rect = self.image.get_rect(center=(x, y))
         self.clicked = False
 

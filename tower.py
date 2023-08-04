@@ -19,6 +19,9 @@ class Tower:
             self.image = pygame.image.load("Entity/Tower_break.PNG").convert_alpha()
             self.image = pygame.transform.rotozoom(self.image, 0, 0.8)
 
+        if self.health > self.max_health:
+            self.health = self.max_health
+
         self.rect = self.image.get_rect(midbottom=(1100, horizon_y))
 
 

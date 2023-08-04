@@ -2,7 +2,7 @@ import pygame
 import sys
 from setting import *
 from character import Character
-from button import CharaButton, ImageButton
+from button import CharaButton, ImageButton, TextButton
 from tower import Tower, HealthBar
 from random import randint, choice
 
@@ -34,7 +34,12 @@ class Game:
         for i in range(0, 5):
             self.button.add(CharaButton(button_list[i], button_x_pos[i]))
 
-        self.pausebutton = ImageButton("Button/Pause.PNG", 50, 50)
+        self.pausebutton = ImageButton("Button/Pause.PNG", 50, 50, 0.2)
+
+        self.shopbutton = TextButton("Shop", 250, 50)
+        self.towerup = ImageButton("Button/Tower_Up.PNG", 300, 275, 0.4)
+        self.shopkeeper = ImageButton("Entity\shopkeeper.jpg", 1100, 350, 1)
+        self.speak_time = 0
 
         # set tower
         self.tower = Tower()
@@ -99,6 +104,11 @@ class Game:
                         self.money += 1
                         self.money_color = BLACK
 
+                elif self.status == "shopping":
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.status = "running"
+
                 elif self.status == "paused":
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
@@ -130,6 +140,9 @@ class Game:
 
                 if self.pausebutton.draw(self.screen):
                     self.status = "paused"
+
+                if self.shopbutton.draw(self.screen):
+                    self.status = "shopping"
 
                 # tower
                 self.tower.draw(self.screen)
@@ -165,6 +178,41 @@ class Game:
                         self.enemy_cooldown_bound = 4000
 
                 # money
+                money_surf = self.textfont.render(
+                    f"Money: {self.money}", False, self.money_color
+                )
+                money_rect = money_surf.get_rect(center=(1100, 50))
+                self.screen.blit(money_surf, money_rect)
+
+            elif self.status == "shopping":
+                self.screen.fill("white")
+
+                pause1_surf = self.captionfont.render("Shop", False, BLUE)
+                pause1_rect = pause1_surf.get_rect(center=(640, 100))
+                pause2_surf = self.textfont.render("ESC to leave shop", False, BLACK)
+                pause2_rect = pause2_surf.get_rect(center=(640, 450))
+                self.screen.blit(pause1_surf, pause1_rect)
+                self.screen.blit(pause2_surf, pause2_rect)
+
+                if self.towerup.draw(self.screen):
+                    if self.money >= 10:
+                        self.tower.health += 10
+                        self.money -= 10
+
+                if self.shopkeeper.draw(self.screen):
+                    self.speak_time = pygame.time.get_ticks()
+                    speak = "Give me your money, you idiot!!"
+
+                if pygame.time.get_ticks() - self.speak_time >= 1000:
+                    speak = ""
+
+                speak_surf = self.textfont.render(f"{speak}", False, RED)
+                speak_rect = speak_surf.get_rect(center=(700, 550))
+                self.screen.blit(speak_surf, speak_rect)
+
+                self.healthbar.update(self.tower.health / self.tower.max_health)
+
+                # money display
                 money_surf = self.textfont.render(
                     f"Money: {self.money}", False, self.money_color
                 )
