@@ -37,7 +37,7 @@ class Main:
         self.team_is_full = False
 
         # Team settings
-        self.charabutton = {}
+        self.charabutton = []
         self.chara_unlock = [
             True,
             False,
@@ -51,7 +51,7 @@ class Main:
         ]
         self.unlock_notify = False
         for i in range(0, 9):
-            self.charabutton[i] = TeamButton(self.chara_unlock[i], i)
+            self.charabutton.append(TeamButton(self.chara_unlock[i], i))
 
     def run(self):
         while True:
