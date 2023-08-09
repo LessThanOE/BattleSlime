@@ -18,6 +18,14 @@ class Game:
         self.textfont = pygame.font.Font("Font/monogram-extended.ttf", 48)
         self.captionfont = pygame.font.Font("Font/monogram-extended.ttf", 144)
 
+        # music
+        pygame.mixer.init()
+        self.runbgm = False
+        self.shopbgm = False
+
+        self.button_sound = pygame.mixer.Sound("click-button.mp3")
+        pygame.mixer.music.set_volume(1)
+
         # initial player status
         self.score = 0
         self.level = 0
@@ -37,8 +45,12 @@ class Game:
         self.pausebutton = ImageButton("Button/Pause.PNG", 50, 50, 0.2)
 
         self.shopbutton = TextButton("Shop", 250, 50)
-        self.towerup = ImageButton("Button/Tower_Up.PNG", 300, 275, 0.4)
-        self.shopkeeper = ImageButton("Entity\shopkeeper.jpg", 1100, 350, 1)
+        self.towerup = ImageButton("Button/tower_health_up.PNG", 300, 275, 0.4)
+        self.enemydown = ImageButton("Button/enemy_health_down.PNG", 550, 275, 0.4)
+        self.enemydown_effect = False
+        self.effect_time = 0
+        self.moneyup = ImageButton("Button/money_up.PNG", 800, 275, 0.4)
+        self.shopkeeper = ImageButton("Entity/shopkeeper.jpg", 1100, 350, 1)
         self.speak_time = 0
 
         # set tower
@@ -54,7 +66,8 @@ class Game:
         pygame.time.set_timer(self.score_timer, 1000)
 
         self.money_timer = pygame.USEREVENT + 3
-        pygame.time.set_timer(self.money_timer, 650)
+        self.money_spd = 700
+        pygame.time.set_timer(self.money_timer, self.money_spd)
 
     def run(self):
         self.status = "running"
@@ -74,6 +87,7 @@ class Game:
                                 and button.name != "Unknown"
                             ):
                                 if self.money >= button.cost:
+                                    self.button_sound.play()
                                     self.money -= button.cost
                                     button.rect.centery = 612
                                     self.chara.add(
@@ -107,20 +121,34 @@ class Game:
                 elif self.status == "shopping":
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
+                            self.button_sound.play()
                             self.status = "running"
 
                 elif self.status == "paused":
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == 1:
                             self.status = "running"
+                            self.button_sound.play()
                         elif event.button == 3:
+                            self.button_sound.play()
                             return self.score
 
                 elif self.status == "end":
                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.button_sound.play()
                         return self.score
 
             if self.status == "running":
+                if self.runbgm == False:
+                    self.runbgm = True
+                    self.shopbgm = False
+                    pygame.mixer.init()
+                    pygame.mixer.music.load("BGM1.mp3")
+                    pygame.mixer.music.set_volume(0.2)
+                    pygame.mixer.music.play()
+                else:
+                    pygame.mixer.music.unpause()
+
                 # background
                 self.screen.fill("white")
                 pygame.draw.line(
@@ -139,9 +167,11 @@ class Game:
                         self.screen.blit(cost_surf, cost_rect)
 
                 if self.pausebutton.draw(self.screen):
+                    self.button_sound.play()
                     self.status = "paused"
 
                 if self.shopbutton.draw(self.screen):
+                    self.button_sound.play()
                     self.status = "shopping"
 
                 # tower
@@ -158,6 +188,19 @@ class Game:
 
                 self.chara.draw(self.screen)
                 self.chara.update(self.enemy.sprites(), self)
+
+                if pygame.time.get_ticks() - self.effect_time >= 10000:
+                    self.enemydown_effect = False
+
+                if self.enemydown_effect:
+                    effect_surf = self.textfont.render("enemy atk down", False, BLACK)
+                    effect_rect = effect_surf.get_rect(center=(640, 300))
+                    self.screen.blit(effect_surf, effect_rect)
+                    for x in self.enemy:
+                        x.atk = x.atk - 3
+                else:
+                    for x in self.enemy:
+                        x.atk = x.oatk
 
                 # score
                 score_surf = self.textfont.render(f"Score: {self.score}", False, BLACK)
@@ -185,6 +228,16 @@ class Game:
                 self.screen.blit(money_surf, money_rect)
 
             elif self.status == "shopping":
+                if self.shopbgm == False:
+                    self.shopbgm = True
+                    self.runbgm = False
+                    pygame.mixer.init()
+                    pygame.mixer.music.load("Elevator-Music.mp3")
+                    pygame.mixer.music.set_volume(0.2)
+                    pygame.mixer.music.play()
+                else:
+                    pygame.mixer.music.unpause()
+
                 self.screen.fill("white")
 
                 pause1_surf = self.captionfont.render("Shop", False, BLUE)
@@ -195,10 +248,33 @@ class Game:
                 self.screen.blit(pause2_surf, pause2_rect)
 
                 if self.towerup.draw(self.screen):
-                    if self.money >= 10:
+                    self.towerup.rect.y += 5
+                    if self.money >= 20:
                         self.tower.health += 10
-                        self.money -= 10
+                        self.money -= 20
+                else:
+                    self.towerup.rect.centery = 275
 
+                if self.enemydown.draw(self.screen) and self.enemydown_effect == False:
+                    self.enemydown.rect.y += 5
+                    if self.money >= 100:
+                        self.effect_time = pygame.time.get_ticks()
+                        self.enemydown_effect = True
+                        self.money -= 100
+                else:
+                    self.enemydown.rect.centery = 275
+
+                # money up
+                if self.moneyup.draw(self.screen):
+                    self.moneyup.rect.y += 5
+                    if self.money >= 500:
+                        self.money_spd -= 200
+                        pygame.time.set_timer(self.money_timer, self.money_spd)
+                        self.money -= 500
+                else:
+                    self.moneyup.rect.centery = 275
+
+                # shopkeeper speak
                 if self.shopkeeper.draw(self.screen):
                     self.speak_time = pygame.time.get_ticks()
                     speak = "Give me your money, you idiot!!"
@@ -220,6 +296,8 @@ class Game:
                 self.screen.blit(money_surf, money_rect)
 
             elif self.status == "paused":
+                pygame.mixer.music.pause()
+
                 pause1_surf = self.captionfont.render("Pause", False, BLUE)
                 pause1_rect = pause1_surf.get_rect(center=(640, 200))
                 pause2_surf = self.textfont.render("LEFT CLICK  continue", False, BLACK)

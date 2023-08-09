@@ -36,6 +36,7 @@ class Character(pygame.sprite.Sprite):
         self.speed = chara_data[name]["speed"]
 
         self.atk = chara_data[name]["atk"]
+        self.oatk = self.atk
         self.atk_range = chara_data[name]["atk_range"]
         self.knock_distance = chara_data[name]["knock_distance"]
 
@@ -145,6 +146,9 @@ class Character(pygame.sprite.Sprite):
 
     def update(self, chara_list, player):
         self.get_status(chara_list)
+
+        if self.atk <= 0:
+            self.atk = 0
 
         if self.status == "moving":
             self.move()
