@@ -16,6 +16,7 @@ class Main:
         self.captionfont = pygame.font.Font("Font/monogram-extended.ttf", 144)
 
         self.view = "menu"
+        pygame.mixer.init()
 
         # text display settings
         self.caption_surf = self.captionfont.render(GAME_NAME, False, BLACK)

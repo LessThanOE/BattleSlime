@@ -254,8 +254,13 @@ class Game:
                 if self.towerup.draw(self.screen):
                     self.towerup.rect.y += 5
                     if self.money >= 200:
+                        self.speak_time = pygame.time.get_ticks()
+                        speak = "Someone is too weak and need some health"
                         self.tower.health += 100
                         self.money -= 200
+                    else:
+                        self.speak_time = pygame.time.get_ticks()
+                        speak = "I don't need poor people in my shop!"
                 else:
                     self.towerup.rect.centery = 275
 
@@ -266,29 +271,38 @@ class Game:
                 if self.enemydown.draw(self.screen) and self.enemydown_effect == False:
                     self.enemydown.rect.y += 5
                     if self.money >= 100:
+                        self.speak_time = pygame.time.get_ticks()
+                        speak = "Enemies have weakened, just like you"
                         self.effect_time = pygame.time.get_ticks()
                         self.enemydown_effect = True
                         self.money -= 100
+                    else:
+                        self.speak_time = pygame.time.get_ticks()
+                        speak = "I don't need poor people in my shop!"
                 else:
                     self.enemydown.rect.centery = 275
 
                 # money up button
-                if self.money_spd <= 300:
-                    moneyup_surf = self.textfont.render("already fastest", False, RED)
-                    moneyup_rect = moneyup_surf.get_rect(center=(700, 250))
-                    self.screen.blit(moneyup_surf, moneyup_rect)
-                else:
-                    moneyup_surf = self.textfont.render("500", False, BLACK)
-                    moneyup_rect = moneyup_surf.get_rect(center=(800, 400))
-                    self.screen.blit(moneyup_surf, moneyup_rect)
-                    if self.moneyup.draw(self.screen):
-                        self.moneyup.rect.y += 5
+                moneyup_surf = self.textfont.render("500", False, BLACK)
+                moneyup_rect = moneyup_surf.get_rect(center=(800, 400))
+                self.screen.blit(moneyup_surf, moneyup_rect)
+                if self.moneyup.draw(self.screen):
+                    self.moneyup.rect.y += 5
+                    if self.money_spd >= 300:
                         if self.money >= 500:
+                            self.speak_time = pygame.time.get_ticks()
+                            speak = "Now you have a faster speed making money."
                             self.money_spd -= 100
                             pygame.time.set_timer(self.money_timer, self.money_spd)
                             self.money -= 500
+                        else:
+                            self.speak_time = pygame.time.get_ticks()
+                            speak = "I don't need poor people in my shop!"
                     else:
-                        self.moneyup.rect.centery = 275
+                        self.speak_time = pygame.time.get_ticks()
+                        speak = "You are already the fastest guy in the game."
+                else:
+                    self.moneyup.rect.centery = 275
 
                 # shopkeeper speak
                 if self.shopkeeper.draw(self.screen):
