@@ -197,7 +197,7 @@ class Game:
                     effect_rect = effect_surf.get_rect(center=(640, 300))
                     self.screen.blit(effect_surf, effect_rect)
                     for x in self.enemy:
-                        x.atk = x.atk - 3
+                        x.atk = x.oatk - 3
                 else:
                     for x in self.enemy:
                         x.atk = x.oatk
@@ -243,18 +243,26 @@ class Game:
                 pause1_surf = self.captionfont.render("Shop", False, BLUE)
                 pause1_rect = pause1_surf.get_rect(center=(640, 100))
                 pause2_surf = self.textfont.render("ESC to leave shop", False, BLACK)
-                pause2_rect = pause2_surf.get_rect(center=(640, 450))
+                pause2_rect = pause2_surf.get_rect(center=(640, 550))
                 self.screen.blit(pause1_surf, pause1_rect)
                 self.screen.blit(pause2_surf, pause2_rect)
 
+                # tower up button
+                towerup_surf = self.textfont.render("200", False, BLACK)
+                towerup_rect = towerup_surf.get_rect(center=(300, 400))
+                self.screen.blit(towerup_surf, towerup_rect)
                 if self.towerup.draw(self.screen):
                     self.towerup.rect.y += 5
-                    if self.money >= 20:
-                        self.tower.health += 10
-                        self.money -= 20
+                    if self.money >= 200:
+                        self.tower.health += 100
+                        self.money -= 200
                 else:
                     self.towerup.rect.centery = 275
 
+                # enemy down button
+                enemydown_surf = self.textfont.render("100", False, BLACK)
+                enemydown_rect = enemydown_surf.get_rect(center=(550, 400))
+                self.screen.blit(enemydown_surf, enemydown_rect)
                 if self.enemydown.draw(self.screen) and self.enemydown_effect == False:
                     self.enemydown.rect.y += 5
                     if self.money >= 100:
@@ -264,15 +272,23 @@ class Game:
                 else:
                     self.enemydown.rect.centery = 275
 
-                # money up
-                if self.moneyup.draw(self.screen):
-                    self.moneyup.rect.y += 5
-                    if self.money >= 500:
-                        self.money_spd -= 200
-                        pygame.time.set_timer(self.money_timer, self.money_spd)
-                        self.money -= 500
+                # money up button
+                if self.money_spd <= 300:
+                    moneyup_surf = self.textfont.render("already fastest", False, RED)
+                    moneyup_rect = moneyup_surf.get_rect(center=(700, 250))
+                    self.screen.blit(moneyup_surf, moneyup_rect)
                 else:
-                    self.moneyup.rect.centery = 275
+                    moneyup_surf = self.textfont.render("500", False, BLACK)
+                    moneyup_rect = moneyup_surf.get_rect(center=(800, 400))
+                    self.screen.blit(moneyup_surf, moneyup_rect)
+                    if self.moneyup.draw(self.screen):
+                        self.moneyup.rect.y += 5
+                        if self.money >= 500:
+                            self.money_spd -= 100
+                            pygame.time.set_timer(self.money_timer, self.money_spd)
+                            self.money -= 500
+                    else:
+                        self.moneyup.rect.centery = 275
 
                 # shopkeeper speak
                 if self.shopkeeper.draw(self.screen):
@@ -283,7 +299,7 @@ class Game:
                     speak = ""
 
                 speak_surf = self.textfont.render(f"{speak}", False, RED)
-                speak_rect = speak_surf.get_rect(center=(700, 550))
+                speak_rect = speak_surf.get_rect(center=(700, 600))
                 self.screen.blit(speak_surf, speak_rect)
 
                 self.healthbar.update(self.tower.health / self.tower.max_health)
