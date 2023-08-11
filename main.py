@@ -2,7 +2,8 @@ import pygame
 import sys
 from game import Game
 from setting import *
-from button import TextButton, TeamButton
+from button import TextButton, TeamButton, ImageButton
+from random import choice, randint
 
 
 class Main:
@@ -32,6 +33,10 @@ class Main:
         self.startbutton = TextButton("START", 640, 370)
         self.Teambutton = TextButton("CHARACTER", 640, 470)
         self.backbutton = TextButton("FINISH", 640, 600)
+        self.Capsulebutton = TextButton("CAPSULE", 1000, 470)
+
+        self.Gamblebutton = TextButton("Start Gamble", 640, 370)
+        self.path = button_data["Unknown"]
 
         # player settings
         self.team_list = ["Slime", "Unknown", "Unknown", "Unknown", "Unknown"]
@@ -97,6 +102,9 @@ class Main:
                 if self.Teambutton.draw(self.screen):
                     self.view = "Team"
 
+                if self.Capsulebutton.draw(self.screen):
+                    self.view = "Capsule"
+
                 if self.unlock_notify:
                     message = pygame.font.Font("Font/monogram-extended.ttf", 48).render(
                         "New Character Unlock !!!", False, BLUE
@@ -127,6 +135,14 @@ class Main:
                     while len(self.team_list) <= 5:
                         self.team_list.append("Unknown")
                     self.view = "menu"
+
+            elif self.view == "Capsule":
+                if self.Gamblebutton.draw(self.screen):
+                    self.path = button_data[choice(chara_list)]
+                    print(randint(0, 100))
+
+                self.price = ImageButton(self.path, 640, 500, 0.4)
+                self.price.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick(FPS)
