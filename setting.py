@@ -183,6 +183,8 @@ button_data = {
     "Unknown": "Button/Unknown.PNG",
 }
 button_x_pos = [340, 490, 640, 790, 940]
+list = [340, 340, 340]
+list = (340, 340, 340)
 
 Team_button_pos = [
     (340, 250),
